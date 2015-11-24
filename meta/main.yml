@@ -1,0 +1,16 @@
+galaxy_info:
+  author: Domen Blenkuš
+  description: Ansible role for installing and configuring Duplicity.
+  license: GPLv3
+  min_ansible_version: 2.0
+  platforms:
+  - name: EL
+    versions:
+    - 7
+  - name: Fedora
+    versions:
+    - 22
+  galaxy_tags:
+    - duplicity
+    - backup
+dependencies: []
