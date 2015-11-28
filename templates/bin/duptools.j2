@@ -3,19 +3,19 @@
 
 [ -f ~/.duplicity_credentials ] && source ~/.duplicity_credentials
 
-LOGFILE="{{ ansible_duplicity_log_file }}"
-BUCKET={{ ansible_duplicity_backup_dest }}
-OLDER_THAN="--full-if-older-than {{ ansible_duplicity_full_if_older_than }}"
-INCLUDE="{% for source in ansible_duplicity_backup_sources %}--include {{ source }} {% endfor %}"
+LOGFILE="{{ duplicity_log_file }}"
+BUCKET={{ duplicity_backup_dest }}
+OLDER_THAN="--full-if-older-than {{ duplicity_full_if_older_than }}"
+INCLUDE="{% for source in duplicity_backup_sources %}--include {{ source }} {% endfor %}"
 
-{% if ansible_duplicity_report_email is defined %}
-EMAIL={{ ansible_duplicity_report_email | default('') }}
-EMAIL_SUBJECT="{{ ansible_duplicity_report_email_subject }}"
+{% if duplicity_report_email is defined %}
+EMAIL={{ duplicity_report_email | default('') }}
+EMAIL_SUBJECT="{{ duplicity_report_email_subject }}"
 {% endif %}
 
 backup() {
   duplicity $OLDER_THAN $INCLUDE --exclude '**' / $BUCKET > $LOGFILE
-  {% if ansible_duplicity_report_email is defined %}
+  {% if duplicity_report_email is defined %}
   mail -s $EMAIL_SUBJECT $EMAIL < $LOGFILE
   {% endif %}
 }
