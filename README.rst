@@ -145,3 +145,4 @@ Author Information
 ------------------
 
 Domen Blenkuš
+Tadej Janež
