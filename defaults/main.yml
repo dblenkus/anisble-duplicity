@@ -1,15 +1,15 @@
 ---
 
-duplicity_download_url: https://code.launchpad.net/duplicity/0.7-series/0.7.05/+download/duplicity-0.7.05.tar.gz
-duplicity_version: duplicity-0.7.05
+backup_duplicity_url: https://code.launchpad.net/duplicity/0.7-series/0.7.05/+download/duplicity-0.7.05.tar.gz
+backup_duplicity_version: duplicity-0.7.05
 
-duplicity_full_if_older_than: 30D
+backup_full_if_older_than: 30D
 
-duplicity_dist_dir: "~/"
-duplicity_bin_dir: "/usr/local/bin"
-duplicity_log_file: "~/duplicity.log"
+backup_dist_dir: "~/"
+backup_bin_dir: "/usr/local/bin"
+backup_log_file: "~/duplicity.log"
 
-duplicity_report_email_subject: Backup report
+backup_report_email_subject: Backup report
 
 backup_user: "backup"
 backup_backups_dir: "backups"
@@ -17,8 +17,8 @@ backup_frequency: "daily"
 backup_keep_number: 10
 backup_keep_days: 90
 
-duplicity_create_cronjob: true
-duplicity_cron_weekday: "*"
-duplicity_cron_day: "*"
-duplicity_cron_hour: 1
-duplicity_cron_minute: 10
+backup_create_cronjob: true
+backup_cron_weekday: "*"
+backup_cron_day: "*"
+backup_cron_hour: 1
+backup_cron_minute: 10

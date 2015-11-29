@@ -1,6 +1,6 @@
 galaxy_info:
   author: Domen Blenkuš
-  description: Ansible role for installing and configuring Duplicity.
+  description: Ansible role for backing up folders and databases.
   license: GPLv3
   min_ansible_version: 2.0
   platforms:
@@ -13,4 +13,6 @@ galaxy_info:
   galaxy_tags:
     - duplicity
     - backup
+    - postgres
+    - mongo
 dependencies: []

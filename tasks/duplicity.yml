@@ -15,30 +15,30 @@
     - gcc
 
 - name: Create download dir
-  file: path={{ duplicity_dist_dir }} state=directory
+  file: path={{ backup_dist_dir }} state=directory
 
 - name: Download the Duplicity tarball
   get_url:
-    url: "{{ duplicity_download_url }}"
-    dest: "{{ duplicity_dist_dir }}/{{ duplicity_version }}.tar.gz"
-  register: duplicity_download_res
+    url: "{{ backup_duplicity_url }}"
+    dest: "{{ backup_dist_dir }}/{{ backup_duplicity_version }}.tar.gz"
+  register: backup_download_res
 
 - name: Untar the duplicity tar.gz
   unarchive:
-    src: "{{ duplicity_dist_dir }}/{{ duplicity_version }}.tar.gz"
-    dest: "{{ duplicity_dist_dir }}"
+    src: "{{ backup_dist_dir }}/{{ backup_duplicity_version }}.tar.gz"
+    dest: "{{ backup_dist_dir }}"
     copy: no
 
 - name: Install duplicity
   shell: >
     python setup.py install
-    chdir={{ duplicity_dist_dir }}/{{ duplicity_version }}
-  when: duplicity_download_res.changed
+    chdir={{ backup_dist_dir }}/{{ backup_duplicity_version }}
+  when: backup_download_res.changed
 
 - name: Install duptools script (Duplicity wrapper)
   template:
     src: bin/duptools.j2
-    dest: "{{ duplicity_bin_dir }}/duptools"
+    dest: "{{ backup_bin_dir }}/duptools"
     mode: 0755
 
 - name: Create file with credentials
@@ -50,9 +50,9 @@
 - name: Create cron job for backups
   cron:
     name: backup
-    weekday: "{{ duplicity_cron_weekday }}"
-    day: "{{ duplicity_cron_day }}"
-    hour: "{{ duplicity_cron_hour }}"
-    minute: "{{ duplicity_cron_minute }}"
-    job: "{{ duplicity_bin_dir }}/duptools backup"
-  when: duplicity_create_cronjob
+    weekday: "{{ backup_cron_weekday }}"
+    day: "{{ backup_cron_day }}"
+    hour: "{{ backup_cron_hour }}"
+    minute: "{{ backup_cron_minute }}"
+    job: "{{ backup_bin_dir }}/duptools backup"
+  when: backup_create_cronjob
