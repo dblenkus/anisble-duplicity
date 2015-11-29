@@ -11,6 +11,12 @@ duplicity_log_file: "~/duplicity.log"
 
 duplicity_report_email_subject: Backup report
 
+genesis_backup_user: "genesis-backup"
+genesis_backup_backups_dir: "backups"
+genesis_backup_frequency: "daily"
+genesis_backup_keep_number: 10
+genesis_backup_keep_days: 90
+
 duplicity_create_cronjob: true
 duplicity_cron_weekday: "*"
 duplicity_cron_day: "*"

@@ -1,0 +1,96 @@
+#!/usr/bin/env python2
+# {{ ansible_managed }}
+
+# This script dumps PostgreSQL and Mongo databases and creates tarballs
+# in BACKUPS_DIR.
+#
+# NOTE: Gzip compression with "--rsyncable" option is used to create tarballs
+#       that are more deduplicable for backup software like bup.
+
+from datetime import datetime, timedelta
+import os
+import shutil
+import subprocess
+import time
+
+# Backup settings
+BACKUPS_DIR = "{{ genesis_backup_backups_dir }}"
+BACKUPS_KEEP_NUMBER = {{ genesis_backup_keep_number }}
+BACKUPS_KEEP_DAYS = {{ genesis_backup_keep_days }}
+BACKUPS_TIMEFORMAT = "%Y-%m-%d-%H%M"
+
+# Mongo settings
+MONGO_DATABASE = "{{ genesis_mongo_database }}"
+MONGO_HOST = "{{ genesis_mongo_host }}"
+MONGO_PORT = "{{ genesis_mongo_port }}"
+
+# PostgreSQL settings
+PG_DATABASE = "{{ genesis_postgresql_database }}"
+PG_HOST = "{{ genesis_postgresql_host }}"
+PG_PORT = "{{ genesis_postgresql_port }}"
+PG_USER = "{{ genesis_postgresql_user }}"
+
+
+time_stamp = time.strftime(BACKUPS_TIMEFORMAT)
+cur_backups_dir = os.path.join(BACKUPS_DIR, time_stamp)
+env = os.environ.copy()
+env["GZIP"] = "--rsyncable"
+
+os.makedirs(cur_backups_dir)
+
+# Backup Mongo
+# TODO: check if Mongo exists on the server
+mongo_dir = os.path.join(cur_backups_dir, "mongo")
+with open(os.devnull, 'w') as devnull:
+    subprocess.check_call([
+            "mongodump",
+            "--db", MONGO_DATABASE,
+            "--out", mongo_dir
+        ], stdout=devnull)
+subprocess.check_call([
+        "tar",
+        "--create",
+        "--gzip",
+        "--file=" + os.path.join(cur_backups_dir, "mongo.tar.gz"),
+        "--directory=" + mongo_dir,
+        ".",
+    ], env=env)
+shutil.rmtree(mongo_dir)
+
+# Backup PostgreSQL
+# TODO: check if PostgreSQL exists on the server
+pg_dir = os.path.join(cur_backups_dir, "postgresql")
+os.makedirs(pg_dir)
+pg_dump_path = os.path.join(pg_dir, "genesis.pgsql")
+with open(pg_dump_path, 'w') as pg_dump_file:
+    subprocess.check_call([
+        "pg_dump",
+        "--host", PG_HOST,
+        "--port", PG_PORT,
+        "--username", PG_USER,
+        "--no-password",
+        PG_DATABASE,
+    ], stdout=pg_dump_file)
+subprocess.check_call([
+        "tar",
+        "--create",
+        "--gzip",
+        "--file=" + os.path.join(cur_backups_dir, "genesis.pgsql.tar.gz"),
+        "--directory=" + pg_dir,
+        ".",
+    ], env=env)
+shutil.rmtree(pg_dir)
+
+# Remove old backups
+backups = [b for b in sorted(os.listdir(BACKUPS_DIR))
+           if os.path.isdir(os.path.join(BACKUPS_DIR, b))]
+backups_to_delete = backups[:-BACKUPS_KEEP_NUMBER]
+today = datetime.today()
+keep_delta = timedelta(days=BACKUPS_KEEP_DAYS)
+backups_to_delete = [b for b in backups_to_delete
+    if today - datetime.strptime(b, BACKUPS_TIMEFORMAT) > keep_delta]
+for b in backups_to_delete:
+    shutil.rmtree(os.path.join(BACKUPS_DIR, b))
+
+# Return the directory with compressed database backup files
+print(cur_backups_dir)
