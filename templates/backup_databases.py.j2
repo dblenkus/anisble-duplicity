@@ -14,21 +14,21 @@ import subprocess
 import time
 
 # Backup settings
-BACKUPS_DIR = "{{ genesis_backup_backups_dir }}"
-BACKUPS_KEEP_NUMBER = {{ genesis_backup_keep_number }}
-BACKUPS_KEEP_DAYS = {{ genesis_backup_keep_days }}
+BACKUPS_DIR = "{{ backup_backups_dir }}"
+BACKUPS_KEEP_NUMBER = {{ backup_keep_number }}
+BACKUPS_KEEP_DAYS = {{ backup_keep_days }}
 BACKUPS_TIMEFORMAT = "%Y-%m-%d-%H%M"
 
 # Mongo settings
-MONGO_DATABASE = "{{ genesis_mongo_database }}"
-MONGO_HOST = "{{ genesis_mongo_host }}"
-MONGO_PORT = "{{ genesis_mongo_port }}"
+MONGO_DATABASE = "{{ backup_mongo_database }}"
+MONGO_HOST = "{{ backup_mongo_host }}"
+MONGO_PORT = "{{ backup_mongo_port }}"
 
 # PostgreSQL settings
-PG_DATABASE = "{{ genesis_postgresql_database }}"
-PG_HOST = "{{ genesis_postgresql_host }}"
-PG_PORT = "{{ genesis_postgresql_port }}"
-PG_USER = "{{ genesis_postgresql_user }}"
+PG_DATABASE = "{{ backup_postgresql_database }}"
+PG_HOST = "{{ backup_postgresql_host }}"
+PG_PORT = "{{ backup_postgresql_port }}"
+PG_USER = "{{ backup_postgresql_user }}"
 
 
 time_stamp = time.strftime(BACKUPS_TIMEFORMAT)
@@ -61,7 +61,7 @@ shutil.rmtree(mongo_dir)
 # TODO: check if PostgreSQL exists on the server
 pg_dir = os.path.join(cur_backups_dir, "postgresql")
 os.makedirs(pg_dir)
-pg_dump_path = os.path.join(pg_dir, "genesis.pgsql")
+pg_dump_path = os.path.join(pg_dir, "backup.pgsql")
 with open(pg_dump_path, 'w') as pg_dump_file:
     subprocess.check_call([
         "pg_dump",
@@ -75,7 +75,7 @@ subprocess.check_call([
         "tar",
         "--create",
         "--gzip",
-        "--file=" + os.path.join(cur_backups_dir, "genesis.pgsql.tar.gz"),
+        "--file=" + os.path.join(cur_backups_dir, "backup.pgsql.tar.gz"),
         "--directory=" + pg_dir,
         ".",
     ], env=env)

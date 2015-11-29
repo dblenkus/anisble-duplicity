@@ -52,21 +52,21 @@ Role Variables
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 | ``duplicity_cron_minute``          |  string  | ``minute`` setting for cronjob            |     no    | 10                                 |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_backup_user``            |  string  | name of the backup user to create         |     no    | genesis-backup                     |
+| ``backup_user``                    |  string  | name of the backup user to create         |     no    | backup                             |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_backup_backups_dir``     |  string  | Directory where to store backups. If it   |     no    | backups                            |
+| ``backup_backups_dir``             |  string  | Directory where to store backups. If it   |     no    | backups                            |
 |                                    |          | is not an absolute path, it will be       |           |                                    |
-|                                    |          | treated as relative to                    |           |                                    |
-|                                    |          | `genesis_backup_user`'s home directory    |           |                                    |
+|                                    |          | treated as relative to `backup_user`'s    |           |                                    |
+|                                    |          | home directory                            |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_backup_frequency``       |  string  | frequency of running the backup script as |     no    | daily                              |
+| ``backup_frequency``               |  string  | frequency of running the backup script as |     no    | daily                              |
 |                                    |          | NOTE: It should be one of the valid       |           |                                    |
 |                                    |          | values of ``special_time`` paramater of   |           |                                    |
 |                                    |          | the `cron module`__                       |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_backup_keep_number``     |  integer | minimal number of backups to keep         |     no    | 10                                 |
+| ``backup_keep_number``             |  integer | minimal number of backups to keep         |     no    | 10                                 |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_backup_keep_days``       |  integer | minimal number of days for which to keep  |     no    | 90                                 |
+| ``backup_keep_days``               |  integer | minimal number of days for which to keep  |     no    | 90                                 |
 |                                    |          | the backups                               |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 
@@ -79,19 +79,19 @@ PostgreSQL configuration
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 |                Name                |   Type   |                Description                | Mandatory |              Default               |
 +====================================+==========+===========================================+===========+====================================+
-| ``genesis_postgresql_host``        |  string  | PostgreSQL server's host name             |     yes   |                                    |
+| ``backup_postgresql_host``         |  string  | PostgreSQL server's host name             |     yes   |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_postgresql_port``        |  integer | Port on which PostgreSQL server is        |     yes   |                                    |
+| ``backup_postgresql_port``         |  integer | Port on which PostgreSQL server is        |     yes   |                                    |
 |                                    |          | listening                                 |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_postgresql_user``        |  string  | Name of the user to use to connect to the |     yes   |                                    |
+| ``backup_postgresql_user``         |  string  | Name of the user to use to connect to the |     yes   |                                    |
 |                                    |          | PostgreSQL server                         |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_postgresql_password``    |  string  | Password to authenticate                  |     yes   |                                    |
-|                                    |          | ``genesis_postgresql_user`` to the        |           |                                    |
+| ``backup_postgresql_password``     |  string  | Password to authenticate                  |     yes   |                                    |
+|                                    |          | ``backup_postgresql_user`` to the         |           |                                    |
 |                                    |          | PostgreSQL server                         |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_postgresql_database``    |  string  | Name of the PostgreSQL database to backup |     yes   |                                    |
+| ``backup_postgresql_database``     |  string  | Name of the PostgreSQL database to backup |     yes   |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 
 
@@ -101,11 +101,11 @@ MongoDB configuration
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 |                Name                |   Type   |                Description                | Mandatory |              Default               |
 +====================================+==========+===========================================+===========+====================================+
-| ``genesis_mongo_host``             |  string  | MongoDB server's host name                |     yes   |                                    |
+| ``backup_mongo_host``              |  string  | MongoDB server's host name                |     yes   |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_mongo_port``             |  integer | Port on which MongoDB server is listening |     yes   |                                    |
+| ``backup_mongo_port``              |  integer | Port on which MongoDB server is listening |     yes   |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``genesis_mongo_database``         |  string  | Name of the MondoDB database to backup    |     yes   |                                    |
+| ``backup_mongo_database``          |  string  | Name of the MondoDB database to backup    |     yes   |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 
 
@@ -115,8 +115,7 @@ SSH configuration
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 |                Name                |   Type   |                Description                | Mandatory |              Default               |
 +====================================+==========+===========================================+===========+====================================+
-| ``genesis_backup_authorized_key`   |  string  | public SSH key added to                   |     yes   |                                    |
-|                                    |          | ``genesis_backup_user``'s                 |           |                                    |
+| ``backup_authorized_key`           |  string  | public SSH key added to ``backup_user``'s |     yes   |                                    |
 |                                    |          | ``~/.ssh/authorized_keys`` file           |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 

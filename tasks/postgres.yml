@@ -2,19 +2,19 @@
 
 - name: Add backup user
   user:
-    name: "{{ genesis_backup_user }}"
+    name: "{{ backup_user }}"
     shell: /bin/bash
 
 - name: Add public SSH key to backup user's authorized_keys file
   authorized_key:
-    user: "{{ genesis_backup_user }}"
-    key: "{{ genesis_backup_authorized_key }}"
+    user: "{{ backup_user }}"
+    key: "{{ backup_authorized_key }}"
 
 - name: Prepare directory for storing backups
   file:
-    path: "{{ genesis_backup_backups_dir }}"
+    path: "{{ backup_backups_dir }}"
     state: directory
-    owner: "{{ genesis_backup_user }}"
+    owner: "{{ backup_user }}"
     mode: 0700
 
 - name: Prepare .pgpass file with PostgreSQL access credentials
@@ -23,7 +23,7 @@
     dest: ~/.pgpass
     mode: 0600
   sudo: yes
-  sudo_user: "{{ genesis_backup_user }}"
+  sudo_user: "{{ backup_user }}"
 
 - name: Install backup script
   template:
@@ -31,13 +31,13 @@
     dest: ~/backup_databases.py
     mode: 0740
   sudo: yes
-  sudo_user: "{{ genesis_backup_user }}"
+  sudo_user: "{{ backup_user }}"
 
 - name: Add backup script to backup user's crontab
   cron:
     name: "Run backup_databases.py"
-    special_time: "{{ genesis_backup_frequency }}"
-    job: "/home/{{ genesis_backup_user }}/backup_databases.py"
+    special_time: "{{ backup_frequency }}"
+    job: "/home/{{ backup_user }}/backup_databases.py"
     state: present
   sudo: yes
-  sudo_user: "{{ genesis_backup_user }}"
+  sudo_user: "{{ backup_user }}"
