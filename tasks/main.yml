@@ -1,3 +1,10 @@
 ---
 
-- include: duplicity.yml
+- include: assertions.yml
+
+- include: user.yml
+  become: yes
+
+- include: postgres.yml
+  become: yes
+  become_user: "{{ backup_user }}"

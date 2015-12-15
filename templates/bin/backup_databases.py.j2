@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # {{ ansible_managed }}
 
-# This script dumps PostgreSQL and Mongo databases and creates tarballs
-# in BACKUPS_DIR.
+# This script dumps PostgreSQL databases and creates tarballs in
+# BACKUPS_DIR.
 #
 # NOTE: Gzip compression with "--rsyncable" option is used to create tarballs
 #       that are more deduplicable for backup software like bup.
@@ -19,11 +19,6 @@ BACKUPS_KEEP_NUMBER = {{ backup_keep_number }}
 BACKUPS_KEEP_DAYS = {{ backup_keep_days }}
 BACKUPS_TIMEFORMAT = "%Y-%m-%d-%H%M"
 
-# Mongo settings
-MONGO_DATABASE = "{{ backup_mongo_database }}"
-MONGO_HOST = "{{ backup_mongo_host }}"
-MONGO_PORT = "{{ backup_mongo_port }}"
-
 # PostgreSQL settings
 PG_DATABASE = "{{ backup_postgresql_database }}"
 PG_HOST = "{{ backup_postgresql_host }}"
@@ -38,25 +33,7 @@ env["GZIP"] = "--rsyncable"
 
 os.makedirs(cur_backups_dir)
 
-# Backup Mongo
-# TODO: check if Mongo exists on the server
-mongo_dir = os.path.join(cur_backups_dir, "mongo")
-with open(os.devnull, 'w') as devnull:
-    subprocess.check_call([
-            "mongodump",
-            "--db", MONGO_DATABASE,
-            "--out", mongo_dir
-        ], stdout=devnull)
-subprocess.check_call([
-        "tar",
-        "--create",
-        "--gzip",
-        "--file=" + os.path.join(cur_backups_dir, "mongo.tar.gz"),
-        "--directory=" + mongo_dir,
-        ".",
-    ], env=env)
-shutil.rmtree(mongo_dir)
-
+{% if backup_postgresql_enable %}
 # Backup PostgreSQL
 # TODO: check if PostgreSQL exists on the server
 pg_dir = os.path.join(cur_backups_dir, "postgresql")
@@ -72,14 +49,15 @@ with open(pg_dump_path, 'w') as pg_dump_file:
         PG_DATABASE,
     ], stdout=pg_dump_file)
 subprocess.check_call([
-        "tar",
-        "--create",
-        "--gzip",
-        "--file=" + os.path.join(cur_backups_dir, "backup.pgsql.tar.gz"),
-        "--directory=" + pg_dir,
-        ".",
-    ], env=env)
+    "tar",
+    "--create",
+    "--gzip",
+    "--file=" + os.path.join(cur_backups_dir, "backup.pgsql.tar.gz"),
+    "--directory=" + pg_dir,
+    ".",
+], env=env)
 shutil.rmtree(pg_dir)
+{% endif %}
 
 # Remove old backups
 backups = [b for b in sorted(os.listdir(BACKUPS_DIR))
