@@ -1,0 +1,4 @@
+---
+
+- fail: msg="If `backup_authorized_key` is given, `backup_user_shell` must be `true`."
+  when: backup_user_shell == false and backup_authorized_key is defined

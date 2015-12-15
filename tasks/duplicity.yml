@@ -50,9 +50,6 @@
 - name: Create cron job for backups
   cron:
     name: backup
-    weekday: "{{ backup_cron_weekday }}"
-    day: "{{ backup_cron_day }}"
-    hour: "{{ backup_cron_hour }}"
-    minute: "{{ backup_cron_minute }}"
+    special_time: "{{ backup_frequency }}"
     job: "{{ backup_bin_dir }}/duptools backup"
   when: backup_create_cronjob

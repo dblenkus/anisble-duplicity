@@ -1,37 +1,23 @@
 ---
 
-- name: Add backup user
-  user:
-    name: "{{ backup_user }}"
-    shell: /bin/bash
-
-- name: Add public SSH key to backup user's authorized_keys file
-  authorized_key:
-    user: "{{ backup_user }}"
-    key: "{{ backup_authorized_key }}"
-
 - name: Prepare directory for storing backups
   file:
     path: "{{ backup_backups_dir }}"
     state: directory
-    owner: "{{ backup_user }}"
     mode: 0700
+
 
 - name: Prepare .pgpass file with PostgreSQL access credentials
   template:
     src: pgpass.j2
     dest: ~/.pgpass
     mode: 0600
-  sudo: yes
-  sudo_user: "{{ backup_user }}"
 
 - name: Install backup script
   template:
     src: backup_databases.py.j2
     dest: ~/backup_databases.py
     mode: 0740
-  sudo: yes
-  sudo_user: "{{ backup_user }}"
 
 - name: Add backup script to backup user's crontab
   cron:
@@ -39,5 +25,3 @@
     special_time: "{{ backup_frequency }}"
     job: "/home/{{ backup_user }}/backup_databases.py"
     state: present
-  sudo: yes
-  sudo_user: "{{ backup_user }}"
