@@ -33,6 +33,7 @@ env["GZIP"] = "--rsyncable"
 
 os.makedirs(cur_backups_dir)
 
+{% if backup_postgresql_enable %}
 # Backup PostgreSQL
 # TODO: check if PostgreSQL exists on the server
 pg_dir = os.path.join(cur_backups_dir, "postgresql")
@@ -48,14 +49,15 @@ with open(pg_dump_path, 'w') as pg_dump_file:
         PG_DATABASE,
     ], stdout=pg_dump_file)
 subprocess.check_call([
-        "tar",
-        "--create",
-        "--gzip",
-        "--file=" + os.path.join(cur_backups_dir, "backup.pgsql.tar.gz"),
-        "--directory=" + pg_dir,
-        ".",
-    ], env=env)
+    "tar",
+    "--create",
+    "--gzip",
+    "--file=" + os.path.join(cur_backups_dir, "backup.pgsql.tar.gz"),
+    "--directory=" + pg_dir,
+    ".",
+], env=env)
 shutil.rmtree(pg_dir)
+{% endif %}
 
 # Remove old backups
 backups = [b for b in sorted(os.listdir(BACKUPS_DIR))

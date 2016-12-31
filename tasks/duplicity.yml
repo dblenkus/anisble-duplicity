@@ -45,7 +45,8 @@
   template:
     src: home/duplicity_credentials.j2
     dest: "~/.duplicity_credentials"
-    mode: 0700
+    mode: 0600
+  become_user: "{{ backup_user }}"
 
 - name: Create cron job for backups
   cron:
@@ -53,3 +54,4 @@
     special_time: "{{ backup_frequency }}"
     job: "{{ backup_bin_dir }}/duptools backup"
   when: backup_create_cronjob
+  become_user: "{{ backup_user }}"

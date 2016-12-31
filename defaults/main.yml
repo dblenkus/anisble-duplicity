@@ -11,15 +11,13 @@ backup_log_file: "~/duplicity.log"
 
 backup_report_email_subject: Backup report
 
+backup_postgresql_enable: false
 backup_postgresql_host: localhost
 backup_postgresql_port: 5432
-backup_postgresql_database: postgres  # XXX: remove
-backup_postgresql_user: postgres  # XXX
-vaulted_backup_postgresql_password: postgres  # XXX
 
 backup_user: "backup"
 backup_user_shell: false
-backup_backups_dir: "backups"
+backup_backups_dir: "~/backups"
 backup_frequency: "daily"
 backup_keep_number: 10
 backup_keep_days: 90
