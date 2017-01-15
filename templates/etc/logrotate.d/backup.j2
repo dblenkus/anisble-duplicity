@@ -1,0 +1,13 @@
+#{{ ansible_managed }}
+
+{% for profile in backup_profiles %}
+{{ backup_log_dir }}/{{ profile.name }}.log {
+  compress
+  copytruncate
+  daily
+  dateext
+  missingok
+  rotate 7
+  size 10M
+}
+{% endfor %}

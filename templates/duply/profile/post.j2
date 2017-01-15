@@ -1,0 +1,16 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+if  [[ $CMD_ERR != 0 ]]; then
+  echo -e "Subject: Backup error\n\nError occured during the backup of {{ item.name }}.\n" | sendmail -v domen@blenkus.com
+fi
+
+WORKDIR={{ backup_work_dir }}/{{ item.name }}
+
+{% if item.source.startswith('postgresql://') or item.source.startswith('mysql://') %}
+rm -rf $WORKDIR/dump
+{% endif %}
+
+{% for action in item.post_actions|default([]) %}
+{{ action }}
+{% endfor %}

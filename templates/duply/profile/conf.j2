@@ -1,0 +1,30 @@
+# {{ ansible_managed }}
+
+GPG_KEYS_ENC='{{ backup_server_gpg_key_id }},{{ backup_master_gpg_key_id }}'
+GPG_KEY_SIGN='{{ backup_server_gpg_key_id }}'
+GPG_PW='{{ backup_server_gpg_key_passphrase }}'
+GPG_OPTS='--trust-model always'
+
+TARGET='{{ item.target|default(backup_target) }}'
+
+{% if item.source.startswith('postgresql://') or item.source.startswith('mysql://') %}
+SOURCE='{{ backup_work_dir }}/{{ item.name }}/dump'
+{% else %}
+SOURCE='{{ item.source|default(backup_source) }}'
+{% endif %}
+
+MAX_AGE={{ item.max_age|default(backup_max_age) }}
+MAX_FULL_BACKUPS={{ item.max_full_backups|default(backup_max_full_backups) }}
+MAX_FULLBKP_AGE={{ item.full_max_age|default(backup_full_max_age) }}
+DUPL_PARAMS="$DUPL_PARAMS --full-if-older-than $MAX_FULLBKP_AGE "
+
+VERBOSITY={{ item.verbosity|default(backup_verbosity) }}
+
+# Add params needed for target or backup process.
+{% for param in item.params|default([]) %}
+{{ param }}
+{% endfor %}
+
+# temporary file space. at least the size of the biggest file in backup
+# for a successful restoration process. (default is '/tmp', if not set)
+TEMP_DIR={{ backup_temp_dir }}

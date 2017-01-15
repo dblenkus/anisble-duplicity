@@ -18,6 +18,23 @@ Role Variables
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 |                Name                |   Type   |                Description                | Mandatory |              Default               |
 +====================================+==========+===========================================+===========+====================================+
+| ``backup_user``                    |  string  | name of the backup user to create         |     no    | ``backup``                         |
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+| ``backup_group``                   |  string  |                                           |     no    | ``backup``                         |
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+| ``backup_secondary_group``         |  list    |                                           |     no    | ``[]``                             |
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+| ``backup_work_dir``                |  string  |                                           |     no    | ``/var/duply``                     |
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+| ``backup_conf_dir``                |  string  |                                           |     no    | ``/etc/duply``                     |
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+| ``backup_profiles``                |   list   |                                           |     no    | ``[]``                             |
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+
+
++------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
+|                Name                |   Type   |                Description                | Mandatory |              Default               |
++====================================+==========+===========================================+===========+====================================+
 | ``backup_aws_key_id``              |  string  | AWS key id - exported to                  |    yes    |                                    |
 |                                    |          | ``AWS_ACCESS_KEY_ID`` environmental       |           |                                    |
 |                                    |          | variable and used for S3 authentication   |           |                                    |
@@ -43,11 +60,6 @@ Role Variables
 | ``backup_report_email_subject``    |  string  | subject of report email                   |     no    | Backup report                      |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 | ``backup_create_cronjob``          | boolean  | create cronjob for backup                 |     no    | true                               |
-+------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``backup_user``                    |  string  | name of the backup user to create         |     no    | backup                             |
-+------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``backup_user_shell``              |  boolean | indicate if ``backup``user will have      |     no    | false                              |
-|                                    |          | shell or not.                             |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 | ``backup_backups_dir``             |  string  | Directory where to store backups. If it   |     no    | backups                            |
 |                                    |          | is not an absolute path, it will be       |           |                                    |
@@ -86,8 +98,6 @@ PostgreSQL configuration
 |                                    |          | ``backup_postgresql_user`` to the         |           |                                    |
 |                                    |          | PostgreSQL server                         |           |                                    |
 +------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
-| ``backup_postgresql_database``     |  string  | Name of the PostgreSQL database to backup |     yes   |                                    |
-+------------------------------------+----------+-------------------------------------------+-----------+------------------------------------+
 
 
 SSH configuration
@@ -119,6 +129,44 @@ the desired play:
       roles:
          - { role: domenblenkus.backup }
 
+GPG key
+-------
+
+To create the GPG key for the server follow this steps:
+
+1. Create new GPG key on the local machine::
+
+    gpg --gen-key
+
+  And use following settings:
+
+  - "RSA and RSA" as Type,
+  - "2048" bits
+  - no expiration ("0")
+  - "<server_name> Backup" as Real name
+  - "support@example.com" as email
+
+2. Export private key::
+
+    gpg --armor --export-secret-key -a MASTER_KEY_ID
+
+   and add it to the ansible vault::
+
+    vaulted_backup_server_gpg_key_private: |
+      -----BEGIN PGP PRIVATE KEY BLOCK-----
+
+      lQO+BFkxj8EBCADWU53LCzrKVhMlhMoNy01AZOIS4Zd/9hMxgMp8rQSsICEdYbFq
+      ...
+      Fm3/kfTiecvD2os5gk4I53PMn/O62QnssQj4QduGPfN6uwoxnHoP130t/sr4hkfW
+      slFYgvYL99HuZY55c8mEiWtN
+      =UWCx
+      -----END PGP PRIVATE KEY BLOCK-----
+
+3. Export public key and save it to the file::
+
+    gpg --armor --export -a MASTER_KEY_ID
+
+
 License
 -------
 
@@ -128,4 +176,3 @@ Author Information
 ------------------
 
 Domen Blenkuš
-Tadej Janež

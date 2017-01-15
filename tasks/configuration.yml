@@ -1,0 +1,37 @@
+---
+
+- name: Configure profiles
+  become_user: "{{ backup_user }}"
+  template:
+    src: duply/profile/conf.j2
+    dest: "{{ backup_conf_dir }}/{{ item.name }}/conf"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+  with_items: "{{ backup_profiles }}"
+
+- name: Configure pre scripts
+  become_user: "{{ backup_user }}"
+  template:
+    src: duply/profile/pre.j2
+    dest: "{{ backup_conf_dir }}/{{ item.name }}/pre"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+  with_items: "{{ backup_profiles }}"
+
+- name: Configure exclude lists
+  become_user: "{{ backup_user }}"
+  template:
+    src: duply/profile/exclude.j2
+    dest: "{{ backup_conf_dir }}/{{ item.name }}/exclude"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+  with_items: "{{ backup_profiles }}"
+
+- name: Configure post scripts
+  become_user: "{{ backup_user }}"
+  template:
+    src: duply/profile/post.j2
+    dest: "{{ backup_conf_dir }}/{{ item.name }}/post"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+  with_items: "{{ backup_profiles }}"

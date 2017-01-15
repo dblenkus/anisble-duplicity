@@ -1,10 +1,17 @@
 ---
 
-- include: assertions.yml
+# backup_postgresql_password is defined
 
-- include: user.yml
-  become: yes
+- include: system.yml
 
-- include: postgres.yml
+- include: gpg.yml
   become: yes
   become_user: "{{ backup_user }}"
+
+- include: databases.yml
+  become: yes
+  become_user: "{{ backup_user }}"
+
+- include: configuration.yml
+
+- include: timer.yml

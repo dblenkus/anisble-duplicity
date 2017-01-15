@@ -15,5 +15,4 @@ galaxy_info:
     - backup
     - postgres
     - mongo
-dependencies:
-  - dblenkus.duplicity
+dependencies: []

@@ -1,0 +1,59 @@
+---
+
+- name: Install MySQL-python package
+  package:
+    name: MySQL-python
+    state: present
+
+- name: Add backup group
+  group:
+    name: "{{ backup_group }}"
+    system: yes
+
+- name: Add backup user
+  user:
+    name: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+    groups: "{{ backup_secondary_groups }}"
+    state: present
+
+- name: Create configuration directory
+  file:
+    path: "{{ backup_conf_dir }}"
+    state: directory
+  become_user: "{{ backup_user }}"
+
+- name: Create work top directory
+  file:
+    path: "{{ backup_work_dir }}"
+    state: directory
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+
+- name: Create work sub-directories
+  file:
+    path: "{{ backup_work_dir }}/{{ item.name }}"
+    state: directory
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+  with_items: "{{ backup_profiles }}"
+
+- name: Create profile directories
+  file:
+    path: "{{ backup_conf_dir }}/{{ item.name }}"
+    state: directory
+    mode: 0700
+  with_items: "{{ backup_profiles }}"
+  become_user: "{{ backup_user }}"
+
+- name: Create log directory
+  file:
+    path: "{{ backup_log_dir }}"
+    state: directory
+    owner: "{{ backup_user }}"
+    group: "{{ backup_group }}"
+
+- name: Configure logrotate
+  template:
+    src: etc/logrotate.d/backup.j2
+    dest: /etc/logrotate.d/backup

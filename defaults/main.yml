@@ -1,25 +1,30 @@
 ---
 
-backup_duplicity_url: https://code.launchpad.net/duplicity/0.7-series/0.7.05/+download/duplicity-0.7.05.tar.gz
-backup_duplicity_version: duplicity-0.7.05
+backup_user: backup
+backup_group: backup
+backup_secondary_groups: []
 
-backup_full_if_older_than: 30D
+backup_conf_dir: ~/.duply
+backup_work_dir: /var/duply
+backup_temp_dir: /tmp
+backup_log_dir: /var/log/duply
 
-backup_dist_dir: "~/"
-backup_bin_dir: "/usr/local/bin"
-backup_log_file: "~/duplicity.log"
-
-backup_report_email_subject: Backup report
-
-backup_postgresql_enable: false
 backup_postgresql_host: localhost
 backup_postgresql_port: 5432
+backup_postgresql_user: backup
 
-backup_user: "backup"
-backup_user_shell: false
-backup_backups_dir: "~/backups"
-backup_frequency: "daily"
-backup_keep_number: 10
-backup_keep_days: 90
+backup_mysql_user: backup
 
-backup_create_cronjob: true
+backup_max_age: 90D
+backup_full_max_age: 30D
+backup_max_full_backups: 3
+
+backup_verbosity: 3
+
+backup_profiles: []
+
+backup_exclude: []
+
+
+# XXX
+backup_postgresql_service_name: rh-postgresql94-postgresql

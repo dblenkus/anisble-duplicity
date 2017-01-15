@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Backup of the {{ item.name }}
+{% if item.source.startswith('postgresql://') %}
+Requisite={{ backup_postgresql_service_name }}.service
+# NOTE: The requirement dependencies do not influence the order in which
+#       services are started or stopped so this has to be configured
+#       independently
+After={{ backup_postgresql_service_name }}.service
+{% endif %}
+
+[Service]
+Type=simple
+# NOTE: Login shell is used so that /etc/profile is loaded in case
+#       PostgreSQL is installed as a Software Collection package and
+#       must be enabled
+ExecStart=/bin/bash --login -c ' \
+        duply {{ item.name }} {{ item.action|default('backup')}} \
+        >> {{ backup_log_dir }}/{{ item.name }}.log 2>&1 \
+    '
+User={{ backup_user }}
+Group={{ backup_group }}

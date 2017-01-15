@@ -1,0 +1,64 @@
+---
+
+- block:
+
+    - name: Add backup user access to the PostgreSQL
+      become_user: postgres
+      postgresql_user:
+        name: "{{ backup_postgresql_user }}"
+        password: "{{ backup_postgresql_password }}"
+
+    # XXX: Test this!
+    - name: Add read permission to PostgreSQL backup user
+      become_user: postgres
+      postgresql_privs:
+        database: "{{ item.source.split('postgresql://')[-1] }}"
+        privs: SELECT
+        type: table
+        objs: ALL_IN_SCHEMA
+        roles: "{{ backup_postgresql_user }}"
+      when: item.source.startswith('postgresql://')
+      with_items: "{{ backup_profiles }}"
+
+    - name: Add read permission to PostgreSQL backup user
+      become_user: postgres
+      postgresql_privs:
+        database: "{{ item.source.split('postgresql://')[-1] }}"
+        privs: SELECT
+        type: sequence
+        objs: ALL_IN_SCHEMA
+        roles: "{{ backup_postgresql_user }}"
+      when: item.source.startswith('postgresql://')
+      with_items: "{{ backup_profiles }}"
+
+    - name: Put PostgreSQL access credentials in .pgpass file
+      lineinfile:
+        dest: ~/.pgpass
+        create: yes
+        regexp: "^{{ backup_postgresql_host }}:{{ backup_postgresql_port }}:{{ item.source.split('postgresql://')[-1] }}:"
+        line: "{{ backup_postgresql_host }}:{{ backup_postgresql_port }}:{{ item.source.split('postgresql://')[-1] }}:{{ backup_postgresql_user }}:{{ backup_postgresql_password }}"
+        mode: 0600
+      when: item.source.startswith('postgresql://')
+      with_items: "{{ backup_profiles }}"
+
+  when: backup_postgresql_password is defined
+
+- block:
+
+    - name: Put MySQL access credentials in .my.cnf file
+      template:
+        src: home/my.cnf.j2
+        dest: ~/.my.cnf
+        mode: 0600
+
+    - name: Create MySQL backup user and grant permissions
+      mysql_user:
+        name: "{{ backup_mysql_user }}"
+        password: "{{ backup_mysql_password }}"
+        priv: "{{ item.source.split('mysql://')[-1] }}.*:SELECT"
+        login_user: root
+        login_password: Zvmm@6iCmFHu63*xKh4^bL2E6kKsDudK
+      when: item.source.startswith('mysql://')
+      with_items: "{{ backup_profiles }}"
+
+  when: backup_mysql_password is defined

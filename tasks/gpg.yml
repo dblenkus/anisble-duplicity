@@ -1,0 +1,13 @@
+---
+
+- name: Import GPG public keys
+  shell: "echo -e '{{ item }}' | gpg --import"
+  with_items:
+    - "{{ backup_server_gpg_key_public }}"
+    - "{{ backup_master_gpg_key_public }}"
+
+# TODO: Find a way to not fail if key already exists
+- name: Import GPG private key
+  shell: "echo -e '{{ backup_server_gpg_key_private }}' | gpg --import"
+  failed_when: false
+  no_log: true

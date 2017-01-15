@@ -1,0 +1,27 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+WORKDIR={{ backup_work_dir }}/{{ item.name }}
+
+{% if item.source.startswith('postgresql://') %}
+
+DBNAME={{ item.source.split('postgresql://')[-1] }}
+pg_dump -c $DBNAME -f ${WORKDIR}/dump
+
+{% elif item.source.startswith('mysql://') %}
+
+{% if item.source == 'mysql://' %}
+# Dump all databases
+DBNAME='--all-databases'
+{% else %}
+# Dump the passed database
+DBNAME={{item.source.split('mysql://')[-1]}}
+{% endif %}
+
+mysqldump --single-transaction --add-drop-table -u {{ backup_mysql_user }} $DBNAME  > ${WORKDIR}/dump
+
+{% endif %}
+
+{% for action in item.pre_actions|default([]) %}
+{{ action }}
+{% endfor %}

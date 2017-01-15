@@ -1,0 +1,7 @@
+# TODO: This is a work-around until Ansible 2.4 is released.
+# In that version, one will be able to simple use:
+# - name: Reload systemd configuration
+#   systemd: daemon_reload=yes
+# For more info, see: http://docs.ansible.com/ansible/systemd_module.html#notes
+- name: Reload systemd configuration
+  command: systemctl daemon-reload
